@@ -2,41 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Feminine Daily Planner Design System - Soft & Gentle */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Soft feminine background */
+    --background: 350 25% 98%;
+    --foreground: 340 15% 25%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card styles with gentle warmth */
+    --card: 350 30% 97%;
+    --card-foreground: 340 15% 25%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Popover with soft pink tint */
+    --popover: 350 30% 98%;
+    --popover-foreground: 340 15% 25%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - soft rose pink */
+    --primary: 340 65% 75%;
+    --primary-foreground: 350 30% 98%;
+    --primary-soft: 340 45% 85%;
+    --primary-glow: 340 75% 80%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - gentle lavender */
+    --secondary: 280 35% 85%;
+    --secondary-foreground: 340 15% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted tones */
+    --muted: 340 20% 92%;
+    --muted-foreground: 340 15% 55%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent - warm peach */
+    --accent: 25 55% 85%;
+    --accent-foreground: 340 15% 25%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Gentle destructive */
+    --destructive: 0 45% 70%;
+    --destructive-foreground: 350 30% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders and inputs */
+    --border: 340 25% 88%;
+    --input: 340 25% 92%;
+    --ring: 340 65% 75%;
 
-    --radius: 0.5rem;
+    /* Specialized colors for app features */
+    --cycle-fertile: 120 40% 80%;
+    --cycle-period: 0 50% 75%;
+    --cycle-ovulation: 60 60% 85%;
+    
+    /* Mood colors */
+    --mood-happy: 50 80% 80%;
+    --mood-calm: 200 40% 80%;
+    --mood-energetic: 35 70% 80%;
+    --mood-sad: 220 30% 75%;
+    --mood-anxious: 15 45% 75%;
+
+    /* Life sphere colors */
+    --sphere-work: 260 40% 80%;
+    --sphere-health: 120 45% 80%;
+    --sphere-relationships: 340 50% 80%;
+    --sphere-personal: 280 45% 85%;
+    --sphere-finance: 90 40% 80%;
+
+    /* Priority levels */
+    --priority-high: 0 55% 75%;
+    --priority-medium: 35 60% 80%;
+    --priority-low: 200 40% 85%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(340 65% 75%), hsl(280 35% 85%));
+    --gradient-soft: linear-gradient(180deg, hsl(350 30% 98%), hsl(340 25% 95%));
+    --gradient-accent: linear-gradient(45deg, hsl(340 65% 75%), hsl(25 55% 85%));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(340 65% 75% / 0.15);
+    --shadow-card: 0 2px 10px -2px hsl(340 40% 70% / 0.1);
+    --shadow-glow: 0 0 30px hsl(340 75% 80% / 0.2);
+
+    /* Border radius for feminine design */
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,41 +100,80 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode with warm, cozy tones */
+    --background: 340 20% 8%;
+    --foreground: 350 25% 92%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 340 25% 12%;
+    --card-foreground: 350 25% 92%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 340 25% 12%;
+    --popover-foreground: 350 25% 92%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 340 60% 70%;
+    --primary-foreground: 340 20% 8%;
+    --primary-soft: 340 40% 60%;
+    --primary-glow: 340 70% 75%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 280 30% 20%;
+    --secondary-foreground: 350 25% 92%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 340 15% 18%;
+    --muted-foreground: 340 15% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 25 45% 25%;
+    --accent-foreground: 350 25% 92%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 45% 60%;
+    --destructive-foreground: 350 25% 92%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --border: 340 20% 22%;
+    --input: 340 20% 18%;
+    --ring: 340 60% 70%;
+
+    /* Dark mode cycle colors */
+    --cycle-fertile: 120 35% 40%;
+    --cycle-period: 0 40% 45%;
+    --cycle-ovulation: 60 50% 45%;
+    
+    /* Dark mode mood colors */
+    --mood-happy: 50 60% 50%;
+    --mood-calm: 200 35% 50%;
+    --mood-energetic: 35 60% 50%;
+    --mood-sad: 220 25% 45%;
+    --mood-anxious: 15 40% 45%;
+
+    /* Dark mode sphere colors */
+    --sphere-work: 260 35% 45%;
+    --sphere-health: 120 40% 45%;
+    --sphere-relationships: 340 45% 50%;
+    --sphere-personal: 280 40% 50%;
+    --sphere-finance: 90 35% 45%;
+
+    /* Dark mode priorities */
+    --priority-high: 0 50% 55%;
+    --priority-medium: 35 55% 60%;
+    --priority-low: 200 35% 60%;
+
+    /* Dark gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(340 60% 70%), hsl(280 30% 45%));
+    --gradient-soft: linear-gradient(180deg, hsl(340 25% 12%), hsl(340 20% 8%));
+    --gradient-accent: linear-gradient(45deg, hsl(340 60% 70%), hsl(25 45% 55%));
+    
+    /* Dark shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(340 80% 20% / 0.3);
+    --shadow-card: 0 2px 10px -2px hsl(340 60% 10% / 0.2);
+    --shadow-glow: 0 0 30px hsl(340 70% 40% / 0.15);
+
+    /* Sidebar dark theme */
+    --sidebar-background: 340 25% 12%;
+    --sidebar-foreground: 350 25% 85%;
+    --sidebar-primary: 340 60% 70%;
+    --sidebar-primary-foreground: 340 20% 8%;
+    --sidebar-accent: 340 20% 18%;
+    --sidebar-accent-foreground: 350 25% 85%;
+    --sidebar-border: 340 20% 22%;
+    --sidebar-ring: 340 60% 70%;
   }
 }
 
@@ -100,6 +183,112 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
+    background: var(--gradient-soft);
+  }
+
+  /* Smooth animations for feminine feel */
+  * {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Custom scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 1rem;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary-soft));
+    border-radius: 1rem;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary));
+  }
+}
+
+@layer components {
+  /* Feminine glass morphism effect */
+  .glass-card {
+    @apply backdrop-blur-sm bg-card/70 border border-border/30;
+    box-shadow: var(--shadow-card);
+  }
+
+  /* Gentle glow effect */
+  .soft-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Priority level indicators */
+  .priority-high {
+    @apply bg-[hsl(var(--priority-high))] text-[hsl(var(--priority-high))]  bg-opacity-20 border border-[hsl(var(--priority-high))]/30;
+  }
+
+  .priority-medium {
+    @apply bg-[hsl(var(--priority-medium))] text-[hsl(var(--priority-medium))]  bg-opacity-20 border border-[hsl(var(--priority-medium))]/30;
+  }
+
+  .priority-low {
+    @apply bg-[hsl(var(--priority-low))] text-[hsl(var(--priority-low))]  bg-opacity-20 border border-[hsl(var(--priority-low))]/30;
+  }
+
+  /* Life sphere indicators */
+  .sphere-work {
+    @apply bg-[hsl(var(--sphere-work))] text-[hsl(var(--sphere-work))]  bg-opacity-20 border border-[hsl(var(--sphere-work))]/30;
+  }
+
+  .sphere-health {
+    @apply bg-[hsl(var(--sphere-health))] text-[hsl(var(--sphere-health))]  bg-opacity-20 border border-[hsl(var(--sphere-health))]/30;
+  }
+
+  .sphere-relationships {
+    @apply bg-[hsl(var(--sphere-relationships))] text-[hsl(var(--sphere-relationships))]  bg-opacity-20 border border-[hsl(var(--sphere-relationships))]/30;
+  }
+
+  .sphere-personal {
+    @apply bg-[hsl(var(--sphere-personal))] text-[hsl(var(--sphere-personal))]  bg-opacity-20 border border-[hsl(var(--sphere-personal))]/30;
+  }
+
+  .sphere-finance {
+    @apply bg-[hsl(var(--sphere-finance))] text-[hsl(var(--sphere-finance))]  bg-opacity-20 border border-[hsl(var(--sphere-finance))]/30;
+  }
+
+  /* Mood indicators */
+  .mood-happy {
+    @apply bg-[hsl(var(--mood-happy))] text-[hsl(var(--mood-happy))]  bg-opacity-20 border border-[hsl(var(--mood-happy))]/30;
+  }
+
+  .mood-calm {
+    @apply bg-[hsl(var(--mood-calm))] text-[hsl(var(--mood-calm))]  bg-opacity-20 border border-[hsl(var(--mood-calm))]/30;
+  }
+
+  .mood-energetic {
+    @apply bg-[hsl(var(--mood-energetic))] text-[hsl(var(--mood-energetic))]  bg-opacity-20 border border-[hsl(var(--mood-energetic))]/30;
+  }
+
+  .mood-sad {
+    @apply bg-[hsl(var(--mood-sad))] text-[hsl(var(--mood-sad))]  bg-opacity-20 border border-[hsl(var(--mood-sad))]/30;
+  }
+
+  .mood-anxious {
+    @apply bg-[hsl(var(--mood-anxious))] text-[hsl(var(--mood-anxious))]  bg-opacity-20 border border-[hsl(var(--mood-anxious))]/30;
+  }
+
+  /* Cycle indicators */
+  .cycle-period {
+    @apply bg-[hsl(var(--cycle-period))] text-[hsl(var(--cycle-period))]  bg-opacity-20 border border-[hsl(var(--cycle-period))]/30;
+  }
+
+  .cycle-fertile {
+    @apply bg-[hsl(var(--cycle-fertile))] text-[hsl(var(--cycle-fertile))]  bg-opacity-20 border border-[hsl(var(--cycle-fertile))]/30;
+  }
+
+  .cycle-ovulation {
+    @apply bg-[hsl(var(--cycle-ovulation))] text-[hsl(var(--cycle-ovulation))]  bg-opacity-20 border border-[hsl(var(--cycle-ovulation))]/30;
   }
 }
