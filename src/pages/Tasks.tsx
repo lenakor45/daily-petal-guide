@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Plus, Filter, Search, CheckCircle, Circle, Star, Heart, Briefcase, User, DollarSign } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -6,63 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/useAuth"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
+import { AddTaskDialog } from "@/components/tasks/AddTaskDialog"
+import { Tables } from "@/integrations/supabase/types"
 
 type Priority = "high" | "medium" | "low"
-type Sphere = "work" | "health" | "relationships" | "personal" | "finance"
+type Task = Tables<"tasks">
 
-interface Task {
-  id: number
-  title: string
-  description?: string
-  priority: Priority
-  sphere: Sphere
-  completed: boolean
-  dueDate?: string
-}
-
-// Mock data
-const mockTasks: Task[] = [
-  {
-    id: 1,
-    title: "Записаться к гинекологу",
-    description: "Ежегодная проверка здоровья",
-    priority: "high",
-    sphere: "health",
-    completed: false,
-    dueDate: "2024-01-20"
-  },
-  {
-    id: 2,
-    title: "Купить подарок маме",
-    description: "День рождения приближается",
-    priority: "medium",
-    sphere: "relationships",
-    completed: false,
-    dueDate: "2024-01-18"
-  },
-  {
-    id: 3,
-    title: "Йога утром",
-    description: "15 минут растяжки",
-    priority: "medium",
-    sphere: "health",
-    completed: true
-  },
-  {
-    id: 4,
-    title: "Обзвонить банки по кредиту",
-    priority: "high",
-    sphere: "finance",
-    completed: false
-  },
-  {
-    id: 5,
-    title: "Медитация перед сном",
-    priority: "low",
-    sphere: "personal",
-    completed: true
-  }
-]
 
 const priorityLabels = {
   high: "Высокий",
@@ -70,43 +22,83 @@ const priorityLabels = {
   low: "Низкий"
 }
 
-const sphereLabels = {
-  work: "Работа",
-  health: "Здоровье",
-  relationships: "Отношения",
-  personal: "Личное",
-  finance: "Финансы"
-}
-
-const sphereIcons = {
-  work: Briefcase,
-  health: Heart,
-  relationships: User,
-  personal: Star,
-  finance: DollarSign
-}
-
 export default function Tasks() {
-  const [tasks, setTasks] = useState(mockTasks)
+  const { user } = useAuth()
+  const { toast } = useToast()
+  const [tasks, setTasks] = useState<Task[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
-  const [selectedSphere, setSelectedSphere] = useState<Sphere | "all">("all")
   const [selectedPriority, setSelectedPriority] = useState<Priority | "all">("all")
   const [showCompleted, setShowCompleted] = useState(true)
+  const [addDialogOpen, setAddDialogOpen] = useState(false)
 
-  const toggleTaskCompletion = (taskId: number) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    ))
+  useEffect(() => {
+    if (user) {
+      fetchTasks()
+    }
+  }, [user])
+
+  const fetchTasks = async () => {
+    if (!user) return
+    
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+
+      if (error) throw error
+      setTasks(data || [])
+    } catch (error) {
+      console.error("Error fetching tasks:", error)
+      toast({
+        title: "Ошибка",
+        description: "Не удалось загрузить задачи",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const toggleTaskCompletion = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId)
+    if (!task) return
+
+    try {
+      const { error } = await supabase
+        .from("tasks")
+        .update({ completed: !task.completed })
+        .eq("id", taskId)
+
+      if (error) throw error
+
+      setTasks(tasks.map(t => 
+        t.id === taskId ? { ...t, completed: !t.completed } : t
+      ))
+
+      toast({
+        title: task.completed ? "Задача не выполнена" : "Задача выполнена",
+        description: task.completed ? "Задача отмечена как невыполненная" : "Поздравляем с выполнением задачи!"
+      })
+    } catch (error) {
+      console.error("Error updating task:", error)
+      toast({
+        title: "Ошибка",
+        description: "Не удалось обновить задачу",
+        variant: "destructive"
+      })
+    }
   }
 
   const filteredTasks = tasks.filter(task => {
     const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          task.description?.toLowerCase().includes(searchQuery.toLowerCase())
-    const matchesSphere = selectedSphere === "all" || task.sphere === selectedSphere
     const matchesPriority = selectedPriority === "all" || task.priority === selectedPriority
     const matchesCompleted = showCompleted || !task.completed
 
-    return matchesSearch && matchesSphere && matchesPriority && matchesCompleted
+    return matchesSearch && matchesPriority && matchesCompleted
   })
 
   const completedCount = tasks.filter(task => task.completed).length
@@ -123,7 +115,10 @@ export default function Tasks() {
           </p>
         </div>
 
-        <Button className="bg-gradient-primary hover:opacity-90 transition-opacity">
+        <Button 
+          onClick={() => setAddDialogOpen(true)}
+          className="bg-gradient-primary hover:opacity-90 transition-opacity"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Добавить задачу
         </Button>
@@ -169,32 +164,6 @@ export default function Tasks() {
               </div>
             </div>
 
-            {/* Sphere Filter */}
-            <div className="flex flex-wrap gap-2">
-              <Button
-                variant={selectedSphere === "all" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedSphere("all")}
-                className={cn(selectedSphere === "all" && "bg-primary")}
-              >
-                Все сферы
-              </Button>
-              {Object.entries(sphereLabels).map(([key, label]) => {
-                const Icon = sphereIcons[key as Sphere]
-                return (
-                  <Button
-                    key={key}
-                    variant={selectedSphere === key ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedSphere(key as Sphere)}
-                    className={cn("gap-2", selectedSphere === key && "bg-primary")}
-                  >
-                    <Icon className="h-3 w-3" />
-                    {label}
-                  </Button>
-                )
-              })}
-            </div>
 
             {/* Priority Filter */}
             <div className="flex gap-2">
@@ -236,7 +205,16 @@ export default function Tasks() {
 
       {/* Tasks List */}
       <div className="space-y-3">
-        {filteredTasks.length === 0 ? (
+        {loading ? (
+          <Card className="glass-card">
+            <CardContent className="p-12 text-center">
+              <div className="text-muted-foreground">
+                <Circle className="h-12 w-12 mx-auto mb-4 opacity-50 animate-spin" />
+                <p className="text-lg font-medium mb-2">Загрузка задач...</p>
+              </div>
+            </CardContent>
+          </Card>
+        ) : filteredTasks.length === 0 ? (
           <Card className="glass-card">
             <CardContent className="p-12 text-center">
               <div className="text-muted-foreground">
@@ -247,78 +225,77 @@ export default function Tasks() {
             </CardContent>
           </Card>
         ) : (
-          filteredTasks.map((task, index) => {
-            const SphereIcon = sphereIcons[task.sphere]
-            return (
-              <Card 
-                key={task.id}
-                className={cn(
-                  "glass-card hover:soft-glow transition-all duration-300 cursor-pointer",
-                  task.completed && "opacity-60"
-                )}
-                style={{ animationDelay: `${index * 50}ms` }}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    {/* Completion Checkbox */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-0 h-6 w-6 rounded-full hover:bg-primary/10"
-                      onClick={() => toggleTaskCompletion(task.id)}
-                    >
-                      {task.completed ? (
-                        <CheckCircle className="h-5 w-5 text-primary" />
-                      ) : (
-                        <Circle className="h-5 w-5 text-muted-foreground" />
-                      )}
-                    </Button>
+          filteredTasks.map((task, index) => (
+            <Card 
+              key={task.id}
+              className={cn(
+                "glass-card hover:soft-glow transition-all duration-300 cursor-pointer",
+                task.completed && "opacity-60"
+              )}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-start gap-4">
+                  {/* Completion Checkbox */}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-0 h-6 w-6 rounded-full hover:bg-primary/10"
+                    onClick={() => toggleTaskCompletion(task.id)}
+                  >
+                    {task.completed ? (
+                      <CheckCircle className="h-5 w-5 text-primary" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </Button>
 
-                    {/* Task Content */}
-                    <div className="flex-1 space-y-2">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="space-y-1">
-                          <h3 className={cn(
-                            "font-medium",
-                            task.completed && "line-through text-muted-foreground"
-                          )}>
-                            {task.title}
-                          </h3>
-                          {task.description && (
-                            <p className="text-sm text-muted-foreground">
-                              {task.description}
-                            </p>
-                          )}
-                        </div>
-
-                        {task.dueDate && (
-                          <div className="text-xs text-muted-foreground whitespace-nowrap">
-                            {new Date(task.dueDate).toLocaleDateString('ru-RU', {
-                              day: 'numeric',
-                              month: 'short'
-                            })}
-                          </div>
+                  {/* Task Content */}
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="space-y-1">
+                        <h3 className={cn(
+                          "font-medium",
+                          task.completed && "line-through text-muted-foreground"
+                        )}>
+                          {task.title}
+                        </h3>
+                        {task.description && (
+                          <p className="text-sm text-muted-foreground">
+                            {task.description}
+                          </p>
                         )}
                       </div>
 
-                      {/* Badges */}
-                      <div className="flex items-center gap-2">
-                        <Badge className={cn(`priority-${task.priority}`, "text-xs gap-1")}>
-                          {priorityLabels[task.priority]}
-                        </Badge>
-                        <Badge className={cn(`sphere-${task.sphere}`, "text-xs gap-1")}>
-                          <SphereIcon className="h-3 w-3" />
-                          {sphereLabels[task.sphere]}
-                        </Badge>
-                      </div>
+                      {task.due_date && (
+                        <div className="text-xs text-muted-foreground whitespace-nowrap">
+                          {new Date(task.due_date).toLocaleDateString('ru-RU', {
+                            day: 'numeric',
+                            month: 'short'
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Badges */}
+                    <div className="flex items-center gap-2">
+                      <Badge className={cn(`priority-${task.priority}`, "text-xs gap-1")}>
+                        {priorityLabels[task.priority]}
+                      </Badge>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            )
-          })
+                </div>
+              </CardContent>
+            </Card>
+          ))
         )}
       </div>
+
+      <AddTaskDialog 
+        open={addDialogOpen}
+        onOpenChange={setAddDialogOpen}
+        onTaskAdded={fetchTasks}
+      />
     </div>
   )
 }
