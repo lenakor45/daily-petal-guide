@@ -1,13 +1,35 @@
 import { ReactNode } from "react"
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "./AppSidebar"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/hooks/useAuth"
+import { useToast } from "@/hooks/use-toast"
+import { LogOut, User } from "lucide-react"
 
 interface AppLayoutProps {
   children: ReactNode
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось выйти из системы',
+        variant: 'destructive'
+      });
+    } else {
+      toast({
+        title: 'До свидания!',
+        description: 'Вы успешно вышли из системы'
+      });
+    }
+  };
+
   return (
     <SidebarProvider 
       defaultOpen={true}
@@ -33,6 +55,22 @@ export function AppLayout({ children }: AppLayoutProps) {
               <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse-soft"></div>
                 Сегодня отличный день!
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 text-sm">
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">{user?.email}</span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleSignOut}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline ml-2">Выйти</span>
+                </Button>
               </div>
             </div>
           </header>
