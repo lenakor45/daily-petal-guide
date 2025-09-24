@@ -21,12 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { ru } from "date-fns/locale"
-import { cn } from "@/lib/utils"
 
 interface AddTaskDialogProps {
   open: boolean
@@ -40,14 +34,6 @@ const priorityOptions = [
   { value: "low", label: "Низкий" }
 ]
 
-const sphereOptions = [
-  { value: "work", label: "Работа" },
-  { value: "health", label: "Здоровье" },
-  { value: "relationships", label: "Отношения" },
-  { value: "personal", label: "Личное" },
-  { value: "finance", label: "Финансы" }
-]
-
 export function AddTaskDialog({ open, onOpenChange, onTaskAdded }: AddTaskDialogProps) {
   const { user } = useAuth()
   const { toast } = useToast()
@@ -56,7 +42,7 @@ export function AddTaskDialog({ open, onOpenChange, onTaskAdded }: AddTaskDialog
     title: "",
     description: "",
     priority: "medium",
-    due_date: null as Date | null
+    due_date: ""
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,7 +55,7 @@ export function AddTaskDialog({ open, onOpenChange, onTaskAdded }: AddTaskDialog
         title: formData.title.trim(),
         description: formData.description.trim() || null,
         priority: formData.priority,
-        due_date: formData.due_date?.toISOString() || null,
+        due_date: formData.due_date ? new Date(formData.due_date).toISOString() : null,
         user_id: user.id
       })
 
@@ -84,7 +70,7 @@ export function AddTaskDialog({ open, onOpenChange, onTaskAdded }: AddTaskDialog
         title: "",
         description: "",
         priority: "medium",
-        due_date: null
+        due_date: ""
       })
       onTaskAdded()
       onOpenChange(false)
@@ -153,34 +139,15 @@ export function AddTaskDialog({ open, onOpenChange, onTaskAdded }: AddTaskDialog
           </div>
 
           <div className="space-y-2">
-            <Label>Срок выполнения (опционально)</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !formData.due_date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {formData.due_date ? (
-                    format(formData.due_date, "dd MMMM yyyy", { locale: ru })
-                  ) : (
-                    "Выберите дату"
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={formData.due_date || undefined}
-                  onSelect={(date) => setFormData(prev => ({ ...prev, due_date: date || null }))}
-                  disabled={(date) => date < new Date()}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <Label htmlFor="due_date">Дата и время выполнения</Label>
+            <Input
+              id="due_date"
+              type="datetime-local"
+              value={formData.due_date}
+              onChange={(e) => setFormData(prev => ({ ...prev, due_date: e.target.value }))}
+              min={new Date().toISOString().slice(0, 16)}
+              required
+            />
           </div>
 
           <DialogFooter>
@@ -191,7 +158,7 @@ export function AddTaskDialog({ open, onOpenChange, onTaskAdded }: AddTaskDialog
             >
               Отмена
             </Button>
-            <Button type="submit" disabled={loading || !formData.title.trim()}>
+            <Button type="submit" disabled={loading || !formData.title.trim() || !formData.due_date}>
               {loading ? "Добавление..." : "Добавить задачу"}
             </Button>
           </DialogFooter>

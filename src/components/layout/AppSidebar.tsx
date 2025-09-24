@@ -76,10 +76,10 @@ export function AppSidebar() {
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
     cn(
       "group relative w-full justify-start gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-200",
-      "hover:bg-primary/10 hover:text-primary hover:shadow-sm",
+      "hover:bg-primary/20 hover:text-primary hover:shadow-sm border",
       isActive ? 
-        "bg-gradient-primary text-primary-foreground shadow-soft" : 
-        "text-muted-foreground"
+        "bg-gradient-primary text-primary-foreground shadow-soft border-primary/50" : 
+        "text-foreground border-border/30 hover:border-primary/30"
     )
 
   return (

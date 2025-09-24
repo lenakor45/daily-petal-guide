@@ -1,15 +1,49 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, List, Grid } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/useAuth"
+import { supabase } from "@/integrations/supabase/client"
+import { Tables } from "@/integrations/supabase/types"
+
+type Task = Tables<"tasks">
 
 type ViewMode = "month" | "week" | "day"
 
 export default function Calendar() {
+  const { user } = useAuth()
   const [viewMode, setViewMode] = useState<ViewMode>("month")
   const [currentDate, setCurrentDate] = useState(new Date())
+  const [tasks, setTasks] = useState<Task[]>([])
+
+  useEffect(() => {
+    if (user) {
+      fetchMonthTasks()
+    }
+  }, [user, currentDate])
+
+  const fetchMonthTasks = async () => {
+    if (!user) return
+    
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59)
+
+    try {
+      const { data, error } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("user_id", user.id)
+        .gte("due_date", startOfMonth.toISOString())
+        .lte("due_date", endOfMonth.toISOString())
+
+      if (error) throw error
+      setTasks(data || [])
+    } catch (error) {
+      console.error("Error fetching tasks:", error)
+    }
+  }
 
   const formatDate = () => {
     if (viewMode === "month") {
@@ -38,22 +72,15 @@ export default function Calendar() {
     setCurrentDate(newDate)
   }
 
-  // Mock calendar data
-  const calendarData = {
-    tasks: [
-      { date: 15, title: "Встреча с врачом", priority: "high", sphere: "health" },
-      { date: 16, title: "Йога", priority: "medium", sphere: "health" },
-      { date: 18, title: "День рождения мамы", priority: "high", sphere: "relationships" },
-    ],
-    cycle: [
-      { date: 12, type: "period" },
-      { date: 13, type: "period" },
-      { date: 14, type: "period" },
-      { date: 22, type: "fertile" },
-      { date: 23, type: "fertile" },
-      { date: 24, type: "ovulation" },
-    ]
-  }
+  // Mock cycle data - в будущем можно подключить к реальной таблице циклов
+  const cycleData = [
+    { date: 12, type: "period" },
+    { date: 13, type: "period" },
+    { date: 14, type: "period" },
+    { date: 22, type: "fertile" },
+    { date: 23, type: "fertile" },
+    { date: 24, type: "ovulation" },
+  ]
 
   const getDaysInMonth = () => {
     const year = currentDate.getFullYear()
@@ -79,9 +106,15 @@ export default function Calendar() {
   }
 
   const getDayData = (day: number) => {
-    const tasks = calendarData.tasks.filter(task => task.date === day)
-    const cycle = calendarData.cycle.find(c => c.date === day)
-    return { tasks, cycle }
+    const dayTasks = tasks.filter(task => {
+      if (!task.due_date) return false
+      const taskDate = new Date(task.due_date)
+      return taskDate.getDate() === day &&
+             taskDate.getMonth() === currentDate.getMonth() &&
+             taskDate.getFullYear() === currentDate.getFullYear()
+    })
+    const cycle = cycleData.find(c => c.date === day)
+    return { tasks: dayTasks, cycle }
   }
 
   return (
