@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useAuth } from "@/hooks/useAuth"
 import { useToast } from "@/hooks/use-toast"
 import { LogOut, User } from "lucide-react"
+import { ReminderSystem } from "@/components/reminders/ReminderSystem"
 
 interface AppLayoutProps {
   children: ReactNode
@@ -52,6 +53,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </div>
             
             <div className="flex items-center gap-3">
+              <ReminderSystem />
               <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse-soft"></div>
                 Сегодня отличный день!

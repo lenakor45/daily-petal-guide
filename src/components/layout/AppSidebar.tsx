@@ -79,7 +79,7 @@ export function AppSidebar() {
       "hover:bg-primary/20 hover:text-primary hover:shadow-sm border",
       isActive ? 
         "bg-gradient-primary text-primary-foreground shadow-soft border-primary/50" : 
-        "text-foreground border-border/30 hover:border-primary/30"
+        "text-slate-800 dark:text-slate-200 border-border/30 hover:border-primary/30"
     )
 
   return (
@@ -97,7 +97,7 @@ export function AppSidebar() {
               <Heart className="h-4 w-4 text-primary-foreground" />
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold">Планировщик</span>
+              <span className="text-sm font-semibold text-slate-800 dark:text-slate-200">Планировщик</span>
               <span className="text-xs text-muted-foreground">для женщин</span>
             </div>
           </div>

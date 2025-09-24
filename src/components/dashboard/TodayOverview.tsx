@@ -31,6 +31,31 @@ export function TodayOverview() {
     }
   }, [user])
 
+  // Подписка на реальные обновления задач
+  useEffect(() => {
+    if (!user) return
+
+    const channel = supabase
+      .channel('dashboard-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          fetchTodayTasks() // Перезагружаем данные при изменениях
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user])
+
   const fetchTodayTasks = async () => {
     if (!user) return
     

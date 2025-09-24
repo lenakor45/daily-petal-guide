@@ -24,6 +24,31 @@ export default function Calendar() {
     }
   }, [user, currentDate])
 
+  // Подписка на реальные обновления задач
+  useEffect(() => {
+    if (!user) return
+
+    const channel = supabase
+      .channel('task-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tasks',
+          filter: `user_id=eq.${user.id}`
+        },
+        () => {
+          fetchMonthTasks() // Перезагружаем задачи при любых изменениях
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [user, currentDate])
+
   const fetchMonthTasks = async () => {
     if (!user) return
     
