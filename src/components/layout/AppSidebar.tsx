@@ -4,6 +4,7 @@ import {
   Heart, 
   ListTodo, 
   Smile, 
+  Target,
   BarChart3, 
   Settings,
   Menu,
@@ -43,6 +44,12 @@ const items = [
     url: "/tasks", 
     icon: ListTodo,
     description: "Управление делами" 
+  },
+  { 
+    title: "Привычки", 
+    url: "/habits", 
+    icon: Target,
+    description: "Трекер привычек" 
   },
   { 
     title: "Цикл", 

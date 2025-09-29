@@ -10,21 +10,10 @@ import { cn } from "@/lib/utils"
 import { useAuth } from "@/hooks/useAuth"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
+import { Tables } from "@/integrations/supabase/types"
 
-type Habit = {
-  id: string
-  name: string
-  user_id: string
-  created_at: string
-}
-
-type HabitEntry = {
-  id: string
-  habit_id: string
-  user_id: string
-  completed_at: string
-  entry_date: string
-}
+type Habit = Tables<"habits">
+type HabitEntry = Tables<"habit_entries">
 
 export default function Habits() {
   const { user } = useAuth()
