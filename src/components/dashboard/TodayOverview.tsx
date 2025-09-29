@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Calendar, Heart, CheckCircle, Smile, Plus, ArrowRight } from "lucide-react"
+import { Calendar, Heart, CheckCircle, Smile, Plus, ArrowRight, Target } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth"
 import { supabase } from "@/integrations/supabase/client"
 import { useNavigate } from "react-router-dom"
 import { Tables } from "@/integrations/supabase/types"
+import { HabitsWidget } from "@/components/habits/HabitsWidget"
 
 type Task = Tables<"tasks">
 
@@ -267,6 +268,9 @@ export function TodayOverview() {
         </CardContent>
       </Card>
 
+      {/* Habits Widget */}
+      <HabitsWidget />
+
       {/* Quick Actions */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Button 
@@ -299,10 +303,10 @@ export function TodayOverview() {
         <Button 
           variant="outline" 
           className="h-auto p-4 flex flex-col gap-2 hover:bg-primary/5 hover:border-primary/30"
-          onClick={() => navigate('/tasks')}
+          onClick={() => navigate('/habits')}
         >
-          <Plus className="h-5 w-5 text-primary" />
-          <span className="text-sm">Добавить</span>
+          <Target className="h-5 w-5 text-primary" />
+          <span className="text-sm">Привычки</span>
         </Button>
       </div>
     </div>
